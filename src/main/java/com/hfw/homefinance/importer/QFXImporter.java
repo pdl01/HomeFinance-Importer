@@ -10,7 +10,10 @@ import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +23,7 @@ import java.util.logging.Logger;
  * @author pldorrell
  */
 public class QFXImporter implements TransactionDataImporter {
+    static SimpleDateFormat input_format = new SimpleDateFormat("yyyyMMHHmmss");
     static String STMTTRN_BEGIN = "<STMTTRN>";
         static String STMTTRN_END = "</STMTTRN>";
     static String TAG_TRNTYPE = "<TRNTYPE>";
@@ -46,13 +50,17 @@ public class QFXImporter implements TransactionDataImporter {
                 txn = new FileTransaction();
             } else if (inTxn && line.startsWith(TAG_NAME)) {
                 txn.setPayee(line.substring(TAG_NAME.length()));
-
             } else if (inTxn && line.startsWith(TAG_TRNTYPE)) {
                 txn.setType(line.substring(TAG_TRNTYPE.length()));
             } else if (inTxn && line.startsWith(TAG_FTID)) {
                 txn.setTxnNumber(line.substring(TAG_FTID.length()));
             } else if (inTxn && line.startsWith(TAG_DTPOSTED)) {
                 String dateInFile = line.substring(TAG_DTPOSTED.length());
+                try {
+                    txn.setTxnDate(input_format.parse(dateInFile));
+                } catch (ParseException ex) {
+                    txn.setTxnDate(new Date());    
+                }
             } else if (inTxn && line.startsWith(TAG_AMOUNT)) {
                 txn.setAmount(Double.parseDouble(line.substring(TAG_AMOUNT.length())));
             } else if (inTxn && line.startsWith(TAG_CHECKNUM)) {
