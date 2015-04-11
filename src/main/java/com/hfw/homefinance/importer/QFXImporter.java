@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * @author pldorrell
  */
 public class QFXImporter implements TransactionDataImporter {
-    static SimpleDateFormat input_format = new SimpleDateFormat("yyyyMMHHmmss");
+    static SimpleDateFormat input_format = new SimpleDateFormat("yyyyMMddHHmmss");
     static String STMTTRN_BEGIN = "<STMTTRN>";
         static String STMTTRN_END = "</STMTTRN>";
     static String TAG_TRNTYPE = "<TRNTYPE>";
